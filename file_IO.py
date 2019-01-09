@@ -40,12 +40,12 @@ def add_user():
     for i in range(len(u_name)):
         if new_user == u_name[i]:
             some_error = 1
-            resp='Username is exit. Can\'t sign again '
+            resp='Username is exist. Can\'t sign again '
             break
     lab.set(resp)
     if some_error == 0:
         ###save_file(new_user, new_pwd)
-        f = open(user_file, 'a')
+        f = open(user_file, 'w')
         f.write(new_user)
         f.write(new_pwd)
         f.close()
@@ -55,7 +55,7 @@ def add_user():
     
 
 user_file = 'test.txt'
-f = open(user_file, 'r')
+f = open(user_file, 'a')
 r_end = 0
 while r_end == 0:
     a=f.readline()
@@ -77,7 +77,7 @@ lab=StringVar()
 Label(fr_1, text="User name :").grid(row=0, column=0, padx=10, pady=5)
 Label(fr_1, text="Password  :").grid(row=1, column=0, padx=10, pady=5)
 Entry(fr_1, textvariable=ent_1).grid(row=0, column=1, padx=10, pady=5)
-Entry(fr_1, textvariable=ent_2).grid(row=1, column=1, padx=10, pady=5)
+Entry(fr_1, textvariable=ent_2, show="*").grid(row=1, column=1, padx=10, pady=5)
 Label(fr_1, textvariable=lab).grid(row=2, column=0, columnspan=2)
 Button(fr_2, text="Login", command=fun_login).grid(row=0, column=0, padx=10, pady=5)
 Button(fr_2, text="Sign in", command=fun_signin).grid(row=0, column=1, padx=10, pady=5)
