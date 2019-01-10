@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 import random as rd
+from sys import platform
+from datetime import datetime
 
 class isBumb:
     def __init__(self, inWin, rowPos, columnPos):
@@ -8,12 +10,17 @@ class isBumb:
         self.rowPos = rowPos
         self.columnPos = columnPos
         self.inside = tk.StringVar()
-        self.idInside = tk.Label(self.inWin, textvariable=self.inside, width=1)
+        self.idInside = tk.Label(self.inWin, textvariable=self.inside,
+                                 font="Arial 12", width=1, height=1,
+                                 padx=10, pady=3)
         self.idInside.grid(row=self.rowPos, column=self.columnPos)
-        self.id = tk.Button(self.inWin, text="", width=1)
+        self.id = tk.Button(self.inWin, text="", font="Arial 12",
+                            width=1, height=1, pady=2)
         self.id.grid(row=self.rowPos, column=self.columnPos)
         self.id.bind("<Button-1>", self.pressed)
         self.id.bind("<Button-3>", self.marked)
+        if platform == "darwin":
+            self.id.bind("<Button-2>", self.marked)
         self.checkBumb = False
         self.beMarked = False
     def putIn(self, inside):
@@ -26,38 +33,79 @@ class isBumb:
                 self.inside.set("1")
             else:
                 a = int(self.inside.get())+1
-                self.inside.set(str(a)) 
+                self.inside.set(str(a))
     def pressed(self, event):
-        if not(self.beMarked):
+        if not(self.beMarked) and self.id.grid_info():
             self.id.grid_forget()
-            if self.inside.get() == "B":
+            checkId = self.inside.get()
+            updat_steped()
+            if checkId == "B":
+                updat_bumbed()
                 tk.messagebox.showwarning("Warning...", "Boom.....\nYou steped on bumb.")
-		    	#self.inWin.destroy()
+	    	    #self.inWin.destroy()
+            elif checkId == "":
+                extendPressed(self.rowPos, self.columnPos)
     def marked(self, event):
         if self.beMarked:
             self.beMarked = False
             self.id["text"] = ""
+            updat_marked(-1)
         else:
             self.beMarked = True
             self.id["text"] = "X"
-
+            updat_marked(1)
+def updat_marked(x):
+    marked_num.set(marked_num.get()+x)
+    lab_marked["text"] = "Marked : "+str(marked_num.get())+" of 50 bumbs; "
+def updat_steped():
+    steped_num.set(steped_num.get()+1)
+    lab_steped["text"] = "Stepped : "+str(steped_num.get())+" of 256 traps; "
+def updat_bumbed():
+    bumbed_num.set(bumbed_num.get()+1)
+    lab_bumbed["text"] = "Bumbed : "+str(bumbed_num.get())+" of 50 bumbs"
+def extendPressed(Bx, By):
+    for i in range(-1,2):
+        if (((Bx+i) >= 0) and ((Bx+i) <16)):
+            for j in range(-1,2):
+                if (((By+j) >= 0) and ((By+j) <16)):
+                    if (bb[Bx+i][By+j].id.grid_info()):
+                        bb[Bx+i][By+j].pressed("<>")
 
 mywin = tk.Tk()
+mywin.title("'Find bumbs'   @by Steven Wu")
+mywin.wm_attributes('-topmost', 1)
+#record area
+fr1 = tk.Frame(mywin)
+marked_num = tk.IntVar()
+steped_num = tk.IntVar()
+bumbed_num = tk.IntVar()
+lab_marked = tk.Label(fr1, text="Marked : 0 of 50 bumbs; ")
+lab_steped = tk.Label(fr1, text="Stepped : 0 of 256 traps; ")
+lab_bumbed = tk.Label(fr1, text="Bumbed : 0 of 50 bumbs")
+lab_marked.grid(row=0, column=0)
+lab_steped.grid(row=0, column=1)
+lab_bumbed.grid(row=0, column=2)
+#bumbs area
+fr2 = tk.Frame(mywin)
+fr1.pack(pady=10)
+fr2.pack()
+#Generate buttons
 bb=[]
 for i in range(16):
     bb.append([])
     for j in range(16):
-        bb[i].append(isBumb(mywin, i, j))
-#random put 20 bumbs 
+        bb[i].append(isBumb(fr2, i, j))
+#random put 20 bumbs
 B_number = 50
-a=[rd.randint(0, 256)]
+rd.seed(str(datetime.now()))
+a=[rd.randint(0, 255)]
 for i in range(1, B_number):
     rep = 1
     while rep == 1:
         rep = 0
         ra = rd.randint(0, 256)
         for j in range(i-1):
-            if ra == a[j]: 
+            if ra == a[j]:
                 rep = 1
     a.append(ra)
 a.sort()
@@ -74,5 +122,3 @@ for i in range(B_number):
                         bb[kr+j][kl+jj].putIn("1")
 
 mywin.mainloop()
-
-
