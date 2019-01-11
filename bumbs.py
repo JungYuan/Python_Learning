@@ -70,55 +70,71 @@ def extendPressed(Bx, By):
                 if (((By+j) >= 0) and ((By+j) <16)):
                     if (bb[Bx+i][By+j].id.grid_info()):
                         bb[Bx+i][By+j].pressed("<>")
+def call_restart():
+    global keep_go
+    keep_go = 1
+    mywin.destroy()
+def call_exit():
+    global keep_go
+    keep_go = 0
+    mywin.destroy()
 
-mywin = tk.Tk()
-mywin.title("'Find bumbs'   @by Steven Wu")
-mywin.wm_attributes('-topmost', 1)
-#record area
-fr1 = tk.Frame(mywin)
-marked_num = tk.IntVar()
-steped_num = tk.IntVar()
-bumbed_num = tk.IntVar()
-lab_marked = tk.Label(fr1, text="Marked : 0 of 50 bumbs; ")
-lab_steped = tk.Label(fr1, text="Stepped : 0 of 256 traps; ")
-lab_bumbed = tk.Label(fr1, text="Bumbed : 0 of 50 bumbs")
-lab_marked.grid(row=0, column=0)
-lab_steped.grid(row=0, column=1)
-lab_bumbed.grid(row=0, column=2)
-#bumbs area
-fr2 = tk.Frame(mywin)
-fr1.pack(pady=10)
-fr2.pack()
-#Generate buttons
-bb=[]
-for i in range(16):
-    bb.append([])
-    for j in range(16):
-        bb[i].append(isBumb(fr2, i, j))
-#random put 20 bumbs
-B_number = 50
-rd.seed(str(datetime.now()))
-a=[rd.randint(0, 255)]
-for i in range(1, B_number):
-    rep = 1
-    while rep == 1:
-        rep = 0
-        ra = rd.randint(0, 256)
-        for j in range(i-1):
-            if ra == a[j]:
-                rep = 1
-    a.append(ra)
-a.sort()
-#bumbs put into isBumb Obj
-for i in range(B_number):
-    kr = int(a[i]/16)
-    kl = a[i]%16
-    bb[kr][kl].putIn("B")
-    for j in range(-1,2):
-        if (((kr+j) >= 0) and ((kr+j) <16)):
-            for jj in range(-1,2):
-                if (((kl+jj) >= 0) and ((kl+jj) <16)):
-                    if not(bb[kr+j][kl+jj].checkBumb):
-                        bb[kr+j][kl+jj].putIn("1")
-
-mywin.mainloop()
+keep_go = 1
+while keep_go == 1:
+    keep_go = 0
+    mywin = tk.Tk()
+    mywin.title("'Find bumbs'   @by Steven Wu")
+    mywin.wm_attributes('-topmost', 1)
+    #menu area
+    topMenu = tk.Menu(mywin)
+    topMenu.add_command(label="Restart", command=call_restart)
+    topMenu.add_command(label="Exit", command=call_exit)
+    mywin.configure(menu=topMenu)
+    #record area
+    fr1 = tk.Frame(mywin)
+    marked_num = tk.IntVar()
+    steped_num = tk.IntVar()
+    bumbed_num = tk.IntVar()
+    lab_marked = tk.Label(fr1, text="Marked : 0 of 50 bumbs; ")
+    lab_steped = tk.Label(fr1, text="Stepped : 0 of 256 traps; ")
+    lab_bumbed = tk.Label(fr1, text="Bumbed : 0 of 50 bumbs")
+    lab_marked.grid(row=0, column=0)
+    lab_steped.grid(row=0, column=1)
+    lab_bumbed.grid(row=0, column=2)
+    #bumbs area
+    fr2 = tk.Frame(mywin)
+    fr1.pack(pady=10)
+    fr2.pack()
+    #Generate buttons
+    bb=[]
+    for i in range(16):
+        bb.append([])
+        for j in range(16):
+            bb[i].append(isBumb(fr2, i, j))
+    #random put 50 bumbs
+    B_number = 50
+    rd.seed(str(datetime.now()))
+    a=[rd.randint(0, 255)]
+    for i in range(1, B_number):
+        rep = 1
+        while rep == 1:
+            rep = 0
+            ra = rd.randint(0, 255)
+            for j in range(i-1):
+                if ra == a[j]:
+                    rep = 1
+        a.append(ra)
+    a.sort()
+    #bumbs put into isBumb Obj
+    for i in range(B_number):
+        kr = int(a[i]/16)
+        kl = a[i]%16
+        bb[kr][kl].putIn("B")
+        for j in range(-1,2):
+            if (((kr+j) >= 0) and ((kr+j) <16)):
+                for jj in range(-1,2):
+                    if (((kl+jj) >= 0) and ((kl+jj) <16)):
+                        if not(bb[kr+j][kl+jj].checkBumb):
+                            bb[kr+j][kl+jj].putIn("1")
+    
+    mywin.mainloop()
